@@ -1,5 +1,5 @@
 # ConnectFour
-In this repository, I will attempt to make an AI TicTacToe using the minimax algorithm. This serves as an easy review of the Minimax Algorithm. In this game, the player starts first and goes against an AI with 3 level of difficulties. The first level corresponds to a depth of 1 in the minimax algorithm, the second level corresponds to a 2 and the third level corresponds to a 4. Notice how in the 3rd level, the time it takes for the AI to move is longer (This is especially true if I put 5, the AI would take about 30 seconds to make a guess.)
+In this repository, I will attempt to make an AI Connect Four using the minimax algorithm. This serves as an easy review of the Minimax Algorithm. In this game, the player starts first and goes against an AI with 3 level of difficulties. The first level corresponds to a depth of 1 in the minimax algorithm, the second level corresponds to a 2 and the third level corresponds to a 4. Notice how in the 3rd level, the time it takes for the AI to move is longer (This is especially true if I put 5, the AI would take about 30 seconds to make a guess.)
 
 ## The Game:
 - To run the game, launch ```pyplay.py```
