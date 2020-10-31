@@ -1,142 +1,116 @@
 import numpy as np
+from weights import evaluationTable
+import math
+import random
 
-def Score(board):
-    # takes in the board and determines the score for both black and white
-    two_point = value(board, 2)
-    three_point = value(board, 3)
-    four_point = value(board, 4)
-    points = two_point + three_point + four_point
-    return points
+def state(X):
+    # Returns:
+    #  -1 if playing
+    #   0 if draw
+    #   1 if player 1 wins
+    #   2 if player 2 wins
+    score = Win(X)
+    moves = Get_Positions(X)
+    if score == 10:
+        return 1
+    elif score == 20:
+        return 2
+    if len(moves) == 0:
+        return 0
+    return -1
+ 
+def miniMax(board, depth, player):
+    moves = Get_Positions(board)
+    if depth == 0 or state(board) != -1:
+        if state(board) ==2:
+            return (None, 10000000)
+        elif state(board) == 1:
+            return (None, -10000000)
+        elif state(board) == 0:
+            return (None, 0)
+        if depth == 0:
+            return (None,int(eval(board)))
+    if player:
+        bestScore = -10000000
+        bestMove = random.choice(moves)
+        for move in moves:
+            board_copy = board.copy()
+            board_copy = drop_piece(board_copy, move, 2)
+            newScore =  miniMax(board_copy, depth-1, False)[1]
+            if newScore > bestScore:
+                bestScore = newScore
+                bestMove = move
+        return bestMove, bestScore
+    else:
+        bestScore = 10000000
+        bestMove = random.choice(moves)
+        for move in moves:
+            board_copy = board.copy()
+            board_copy = drop_piece(board_copy, move, 1)
+            newScore =  miniMax(board_copy, depth-1, True)[1]
+            if  newScore < bestScore:
+                bestScore = newScore
+                bestMove = move
+        return bestMove, bestScore
 
-def MiniMax(depth, X, maximizingPlayer):
-    return 0
-
+def drop_piece(board, move, player):
+    if player == 1:
+        board[move] = 1
+    elif player == 2:
+        board[move] = 2
+    return board
+    
 def Get_Positions(X):
     # Gets positions that are available in the board and returns a list of those available
     accum = []
-    for i in range(35,42,1):
-        if X[i] == 0:
-            accum = accum + [i]
-    for i in range(0,7,1):
-        if X[i] != 0:
-            accum = accum + [1000] # Means column is filled
-    for i in range(0,35,1):
-        if (X[i+7] != 0) and (X[i] == 0):
-            accum = accum + [i]
+    column = 5
+    row = 0
+    is_true = True
+    while is_true:
+         if X[column][row] != 0:
+             column-=1
+             if column <0:
+                 column = 5
+                 row+=1
+         if X[column][row] == 0:
+             accum = accum + [(column,row)]
+             column = 5
+             row += 1
+         if (len(accum) == 7) or (column == 0 and row ==6) or row >6 or column <0:
+             is_true = False
     return accum
-
-def getboundary(X):
-    # gets the boundary positions of the board and returns an array
-    boundary = Get_Positions(X)
-    for i in range(0,len(boundary)):
-        if boundary[i] != 1000:
-            boundary[i] = boundary[i] + 7
-    return boundary
 
 def Check(X):
     # Checks what moves will get a win for X and O and returns a two length array, 0 if none
-    moves = getboundary(X)
+    moves = Get_Positions(X)
     accumX = []
     accumY = []
     CopyBoard = X.copy() # Copies the board
-    for i in range(0,len(moves),1):
-        if moves[i] != 1000:
-            CopyBoard[i] = moves[i]
+    for i in moves:
+            CopyBoard[i] 
             IsWin = Win(CopyBoard)
             if IsWin == 10:
                 accumX = accumX + [i]
             elif IsWin == 20:
                 accumY = accumY + [i]
             CopyBoard[i] = 0
-    if len(accumX) == 0:
-        accumX = accumX + [0]
-    if len(accumY) == 0:
-        accumY = accumY + [0]
     return [accumX,accumY]
 
-def value(board, streak):
-    # calculates the points for each streak (2,3,or 4)
-    # check Horizontal
-    points = 0
-    for j in range(0,6,1):
-        for i in range(7*j,8-streak + 7*j,1):
-           if board[i:i+streak] == [1]*streak:
-              points += 1
-           elif board[i:i+streak] == [2]*streak:
-              points -= 1
+def eval(board):
+    utility = 138
+    sum = 0
+    for i in range(0,6,1):
+        for j in range(0,7,1):
+           if board[i][j] == 2:
+               sum += evaluationTable[i][j]
+           if board[i][j] == 1:
+               sum -= evaluationTable[i][j]
+    return sum + utility
 
-    # for convenience for checking the vertical points
-    boardf = []
-    board_copy1 =  np.array([board[0:7],board[7:14],board[14:21],board[21:28],board[28:35]])
-    board_transpose = board_copy1.transpose()
-    board_copy2 = board_transpose.tolist()
-    for i in range(0, len(board_copy2)):
-        boardf = boardf + board_copy2[i]
-    # check Vertical
-    for j in range(0,7,1):
-        for i in range(6*j,7-streak + 7*j,1):
-          if boardf[i:i+streak] == [1]*streak:
-              points += 1
-          elif boardf[i:i+streak] == [2]*streak:
-              points -= 1
-
-    # For right diagonal
-    if streak == 2:
-        for j in range(0, 5, 1):
-            for i in range(7*j, 7*j+6, 1):
-                if board[i] == board[i + 8] == 1:
-                    points += 1
-                if board[i] == board[i + 8] == 2:
-                    points -= 1
-    if streak == 3:
-        for j in range(0, 4, 1):
-            for i in range(7*j, 7*j+5, 1):
-                if board[i] == board[i + 8] == 1:
-                    points += 1
-                if board[i] == board[i + 8] == 2:
-                    points -= 1
-    if streak == 4:
-        for j in range(0, 3, 1):
-            for i in range(7*j, 7*j+4, 1):
-                if board[i] == board[i + 8] == 1:
-                    points += 1
-                if board[i] == board[i + 8] == 2:
-                    points -= 1
-
-    # For left diagonal
-    if streak == 2:
-        for j in range(0, 5, 1):
-            for i in range(7*j+1, 7*j+7, 1):
-                if board[i] == board[i + 6] == 1:
-                    points += 1
-                if board[i] == board[i + 6] == 2:
-                    points -= 1
-    if streak == 3:
-        for j in range(0, 4, 1):
-            for i in range(7*j+2, 7*j+7, 1):
-                if board[i] == board[i + 6] == 1:
-                    points += 1
-                if board[i] == board[i + 6] == 2:
-                    points -= 1
-    if streak == 4:
-        for j in range(0, 3, 1):
-            for i in range((7*j)+3, 7*j+7, 1):
-                if board[i] == board[i + 6] == 1:
-                    points +=1
-                if board[i] == board[i + 6] == 2:
-                    points -=1
-    if streak == 2:
-        points = points*10
-    if streak == 3:
-        points = points*100
-    if streak == 4:
-        points = points*1000
-    return points
-
-def Win(X):
-    # eneral win condition returns a 10 if a win from X; 20 from O; and a 0 if neither
-    # -----------------------#
+def Win(Board):
+    # general win condition returns a 10 if a win from X; 20 from O; and a 0 if neither
     # Horizontal
+    X = Board.flatten()
     for j in range(0,6,1):
         for i in range(4*j+3*j,4*(j+1)+3*j,1):
           if (X[i]==X[i+1] == X[i+2]==X[i+3]==1):

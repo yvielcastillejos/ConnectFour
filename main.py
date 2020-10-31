@@ -1,29 +1,29 @@
-from Score import*
-
-def Main(x):
-    return 0
+from score import*
+import numpy as np
 
 def BoardGame():
-    A = [0]*6*7
+    A = np.zeros((6,7), dtype = int)
     return A
 
 def Display(B):
     #Displays the board in the terminal prompt
     accum = ""
-    A = [0]*6*7
+    A = np.zeros((6,7), dtype = int).tolist()
     for i in range(0,len(B),1):
-        if B[i] == 0:
-            A[i] = " "
-        if B[i] == 1:
-            A[i] = "X"
-        if B[i] == 2:
-            A[i] = "O"
-    for i in range(1,6*7+1,1):
-        accum = accum + str(A[i-1]) + str("    |  ")
-        if (i%7) == 0:
-            print(accum)
-            print("------------------------------------------------------")
-            accum = ''
+        for j in range(0,len(B[0]),1):
+           if B[i][j] == 0:
+               A[i][j] = " "
+           if B[i][j] == 1:
+               A[i][j] = "X"
+           if B[i][j] == 2:
+               A[i][j] = "O"
+    for i in range(0,len(B)):
+        for j in range(0,len(B[0]),1):
+            accum = accum + str(A[i][j]) + str("     |  ")
+        print(accum)
+        print("--------------------------------------------------------------")
+        #print("---------------------------------------------------")
+        accum = ''
     return
 
 def ForConvenience():
@@ -43,12 +43,3 @@ def Displayhelper(A):
             print("------------------------------------------------------")
             accum = ''
     return
-
-
-def Generator(X):
-    #takes in the board
-    #Finds the next best possible move: AI by using minimax and calling score
-    return
-
-ForConvenience()
-
