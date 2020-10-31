@@ -5,15 +5,15 @@ In this repository, I will attempt to make an AI Connect Four using the minimax 
 - To run the game, launch ```pyplay.py```
 
 ### Level 1 with depth of 1
-<img src="https://github.com/yvielcastillejos/ConnectFour/blob/master/L1.gif" height = "500" width = "500">
+<img src="https://github.com/yvielcastillejos/ConnectFour/blob/master/Level1.gif" height = "500" width = "500">
 
 ### Level 2 with depth of 3
 
-<img src="https://github.com/yvielcastillejos/ConnectFour/blob/master/L2.gif" height = 500 width = 500>
+<img src="https://github.com/yvielcastillejos/ConnectFour/blob/master/Level2.gif" height = 500 width = 500>
 
 ### Level 3 with depth of 4
 
-<img src="https://github.com/yvielcastillejos/ConnectFour/blob/master/L3.gif" height = 500 width = 500>
+<img src="https://github.com/yvielcastillejos/ConnectFour/blob/master/Level3.gif" height = 500 width = 500>
 
 - The gif conversion from video cut off the AI winning; however, for level 3, it was almost impossible to win (as I am really bad at the game).
 
