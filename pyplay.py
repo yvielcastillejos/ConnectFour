@@ -23,6 +23,7 @@ unselected =(183, 190, 189)
 
 def main():
     pygame.init()
+    pygame.display.set_caption('Connect Four')
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode(size = (S_WIDTH+200,S_HEIGHT+200), flags = 0)
     surface = pygame.Surface(screen.get_size())
@@ -33,29 +34,40 @@ def main():
     screen.blit(background_img,(0,0))
     draw_background(surface, board)
     x = 1
-    myfont = pygame.font.SysFont("fontname", 30)
+    posx = None
+    prevx = 1
+    myfont = pygame.font.SysFont("fontname", 50)
     while True:
         clock.tick(10)
         screen.blit(background_img,(0,0))
+        pygame.draw.rect(surface, (30,30,30), ((0,0),(S_HEIGHT+300, S_WIDTH+300)))
         draw_background(surface, board)
         draw_buttons(surface, x)
-        pos_t,x = event(surface,x)
+        pos_t,x, posx = event(surface,x, posx)
+        if posx[0] >150 and posx[0] <825 and posx != None:
+            pygame.draw.circle(surface, ply1clr, (posx[0], 150),30)
+            pygame.draw.circle(surface, (190,34,45), (posx[0], 150),30,5)
         if x == 5:
-            draw_buttons(surface, x)
-            x = 1
-            board = BoardGame()
-        if pos_t != 1:
-            board = playwithAI(pos_t[0], board, x)
-            draw_background(surface, board)
-        screen.blit(surface, (0,0))
-        text1 = myfont.render("L1", 1, (0,0,0))
-        screen.blit(text1, (65,365))
-        text1 = myfont.render("L2", 1, (0,0,0))
-        screen.blit(text1, (65,465))
-        text1 = myfont.render("L3", 1, (0,0,0))
-        screen.blit(text1, (65,565))
-        text1 = myfont.render("Reset", 1, (0,0,0))
-        screen.blit(text1, (49,650))
+            board, x = reset(board,surface,x, prevx)
+        if pos_t != 1 and state(board) == -1:
+            try:
+                board = playwithAI(pos_t[0], board, x)
+                draw_background(surface, board)
+            except:
+                _ = 0
+        text_render(surface, screen)
+        checkstate(board,screen,myfont)
+        pygame.display.update()
+        prevx=x
+    return
+
+def reset(board, surface, x, prevx):
+        draw_buttons(surface, x)
+        x = prevx
+        board = BoardGame()
+        return board, x
+
+def checkstate(board, screen, myfont):
         if state(board) == 1:
                 text2 = myfont.render("PLAYER 1 WON!", 1, (255,255,0))
                 screen.blit(text2, (500,50))
@@ -65,11 +77,22 @@ def main():
         elif state(board) == 0:
                 text2 = myfont.render("DRAW!", 1, (255,255,0))
                 screen.blit(text2, (500,50))
-        pygame.display.update()
-    return
+        return
 
+def text_render(surface, screen):
+        myfont = pygame.font.SysFont("fontname", 30)
+        screen.blit(surface, (0,0))
+        text1 = myfont.render("L1", 1, (0,0,0))
+        screen.blit(text1, (65,365))
+        text1 = myfont.render("L2", 1, (0,0,0))
+        screen.blit(text1, (65,465))
+        text1 = myfont.render("L3", 1, (0,0,0))
+        screen.blit(text1, (65,565))
+        text1 = myfont.render("Reset", 1, (0,0,0))
+        screen.blit(text1, (49,650))
+        return
 
-def event(surface,x):
+def event(surface,x, posx):
     for event in pygame.event.get():
         pos = 5
         if event.type == pygame.QUIT:
@@ -90,18 +113,14 @@ def event(surface,x):
             elif (pos[0] >40 and pos[0] <125) and (pos[1]>650 and pos[1]<665):
                 x = 5
             else:
-                return pos,x
-            return 1,x
+                return pos,x,posx
+            return 1,x,posx
         if event.type == pygame.MOUSEMOTION:
             posx = event.pos
-            if posx[0] >150 and posx[0] <825:
-                 pygame.draw.circle(surface, ply1clr, (posx[0], 150),30)
-                 pygame.draw.circle(surface, (190,34,45), (posx[0], 150),30,5)
-#                 pygame.display.update()
-    return 1,x
+    return 1, x, posx
 
 def draw_background(surface, board):
-    pygame.draw.rect(surface, (30,30,30), ((0,0),(S_HEIGHT+300, S_WIDTH+300)))
+#    pygame.draw.rect(surface, (30,30,30), ((0,0),(S_HEIGHT+300, S_WIDTH+300)))
     surface.blit(background_img,(0,0))
     for y in range(0,int(GRID_HEIGHT)):
         for x in range(0,int(GRID_WIDTH)):
