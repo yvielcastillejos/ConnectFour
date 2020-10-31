@@ -5,9 +5,12 @@ import numpy as np
 from play import*
 from main import BoardGame
 
-
-background_img = pygame.image.load("/Users/yvielcastillejos/Desktop/Logo.png")
+background_img = pygame.image.load("/Users/yvielcastillejos/Desktop/ConnectFour/Logo.png")
+table = pygame.image.load("/Users/yvielcastillejos/Desktop/ConnectFour/table.jpg")
 background_img = pygame.transform.scale(background_img,(400,100))
+table = pygame.transform.scale(table,(900,950))
+BLUE = pygame.image.load("/Users/yvielcastillejos/Desktop/ConnectFour/BLUE.png")
+BLUE = pygame.transform.scale(BLUE,(700,600))
 
 S_WIDTH = 700
 S_HEIGHT = 600
@@ -40,7 +43,9 @@ def main():
     while True:
         clock.tick(10)
         screen.blit(background_img,(0,0))
-        pygame.draw.rect(surface, (30,30,30), ((0,0),(S_HEIGHT+300, S_WIDTH+300)))
+        surface.blit(table,(0,0))
+        surface.blit(BLUE,(150,200))
+        #pygame.draw.rect(surface, (30,30,30), ((0,0),(S_HEIGHT+300, S_WIDTH+300)))
         draw_background(surface, board)
         draw_buttons(surface, x)
         pos_t,x, posx = event(surface,x, posx)
@@ -49,8 +54,14 @@ def main():
             pygame.draw.circle(surface, (190,34,45), (posx[0], 150),30,5)
         if x == 5:
             board, x = reset(board,surface,x, prevx)
+        if x != prevx:
+            board, x = reset(board,surface,x, x)
         if pos_t != 1 and state(board) == -1:
             try:
+                if x == 4:
+                    think = myfont.render("HMMMM? Let me think...", 1, (255,255,0))
+                    screen.blit(think, (500,50))
+                    pygame.display.update()
                 board = playwithAI(pos_t[0], board, x)
                 draw_background(surface, board)
             except:
@@ -124,10 +135,10 @@ def draw_background(surface, board):
     surface.blit(background_img,(0,0))
     for y in range(0,int(GRID_HEIGHT)):
         for x in range(0,int(GRID_WIDTH)):
-            r = pygame.Rect((GRIDSIZE*x+150, GRIDSIZE*y+200),(GRIDSIZE, GRIDSIZE))
+           # r = pygame.Rect((GRIDSIZE*x+150, GRIDSIZE*y+200),(GRIDSIZE, GRIDSIZE))
             r1 = pygame.Rect((150, 200),(S_HEIGHT+100, S_WIDTH+100))
-            pygame.draw.rect(surface, clr1, r)
-            pygame.draw.rect(surface, clr2, r1,5)
+           # pygame.draw.rect(surface, clr1, r)
+            pygame.draw.rect(surface, (0,0,105), r1,5)
     for y in range(0,int(GRID_HEIGHT),2):
         for x in range(0,int(GRID_WIDTH),2):
             pygame.draw.circle(surface, clr2, (GRIDSIZE*x+200, GRIDSIZE*y+250), 30)
